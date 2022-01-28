@@ -1,3 +1,4 @@
+const { query } = require('express');
 const express = require('express');
 const res = require('express/lib/response');
 
@@ -68,7 +69,7 @@ server.get('/posts/:author', (req, res) =>{
 });
 
 
-server.get('/posts/:author/:title', (res, req) => {
+server.get('/posts/:author/:title', (req, res) => {
   const author = req.query.author;
   const title = req.query.title;
   if(posts.find(item => item.author === author && item.title === title)){
@@ -78,19 +79,16 @@ server.get('/posts/:author/:title', (res, req) => {
   }   
 });
 
-server.put('/posts', (res,req) => {
+server.put('/posts', (req,res) => {
   const {id,title,contents} = req.body;
   if(id && title && contents){
-    posts.map(function(dato){
-      if(dato.id === req.body.id){
-        dato.title = req.body.title;
-        dato.contents = req.body.contents;
-
-        return dato;
+      if(posts.find(item => item.id === req.body.id)){
+        const indice = posts.findIndex(item => item.id === req.body.id);
+        posts[indice].title = title;
+        posts[indice].title = contents;
       }else{
       res.status(STATUS_USER_ERROR).json({error: "Id no identificado"});
       }
-    })
     
   }else {
     return res.status(STATUS_USER_ERROR).json({error: "No se recibieron los parámetros necesarios para modificar el Post"})
